@@ -35,6 +35,10 @@ WORKDIR /app
 COPY --from=build /app /app
 RUN npm install --global --omit=dev @anthropic-ai/claude-code@latest @openai/codex@latest
 
+RUN useradd -m -s /bin/bash paperclip && \
+  mkdir -p /paperclip/instances/default && \
+  chown -R paperclip:paperclip /paperclip /app
+
 ENV NODE_ENV=production \
   HOME=/paperclip \
   HOST=0.0.0.0 \
@@ -47,5 +51,6 @@ ENV NODE_ENV=production \
   PAPERCLIP_DEPLOYMENT_EXPOSURE=private
 
 EXPOSE 3100
+USER paperclip
 
 CMD ["node", "--import", "./server/node_modules/tsx/dist/loader.mjs", "server/dist/index.js"]
